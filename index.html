@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang=en>
+<head>
+    <meta charset=utf-8>
+    <title>file upload example</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bluebird/3.5.0/bluebird.min.js"></script>
+    <script
+        src="https://code.jquery.com/jquery-2.2.4.min.js"
+        integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+        crossorigin="anonymous"></script>
+    <script src="file-dialog.js"></script>
+    <style type="text/css">
+        #hidden-file { display: none; }
+        .nope { text-decoration: line-through; color: red; }
+    </style>
+</head>
+<body>
+
+<p>
+    <button id="btn-1">upload image</button>
+    <label for="btn-1">formData + ajax post (<span class="nope">ie9</span>, ie10, ie11, edge)</label>
+</p>
+
+<script type="text/javascript">
+$('#btn-1').on('click', function () {
+  fileDialog()
+    .then(function (file) {
+      var data = new FormData()
+      data.append('file', file[0])
+      data.append('imageName', 'foo-bar-baz')
+
+      // the values we have in IE (this is not a html5 file upload, so the content is not here of course)
+      console.log({ name: file[0].name, size: file[0].size, type: file[0].type });
+
+      $.ajax({
+        url: 'index.html',
+        data: data,
+        processData: false,
+        contentType: false, // do NOT set contentType or mimeType
+        type: 'POST',
+        success: function (data){
+          alert('success');
+        }
+      });
+    })
+});
+</script>
+</body>
+</html>
