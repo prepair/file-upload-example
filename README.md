@@ -1,8 +1,9 @@
 file upload example
 ===================
 
-* IE10, IE11, firefox
-* uses dynamic input type file and formData
+* IE10, IE11, firefox, chrome
+* exmaple: dynamic input type file and formData
+* exmaple: html5 filereader
 
 ## usage
 
