@@ -17,20 +17,32 @@
 <body>
 
 <p>
-    <button id="btn-1">upload image</button>
-    <label for="btn-1">formData + ajax post (<span class="nope">ie9</span>, ie10, ie11, edge)</label>
+  <button id="btn-1">upload csv</button>
+  <label for="btn-1">formData + ajax post (ie10+)</label>
+</p>
+<p>
+  <button id="btn-2">upload csv</button>
+  <label for="btn-2">fileReader api (ie10+)</label>
 </p>
 
-<script type="text/javascript">
-$('#btn-1').on('click', function () {
-  fileDialog()
-    .then(function (file) {
-      var data = new FormData()
-      data.append('file', file[0])
-      data.append('imageName', 'foo-bar-baz')
+<div id="result"></div>
+<pre id="metadata"></pre>
 
-      // the values we have in IE (this is not a html5 file upload, so the content is not here of course)
-      console.log({ name: file[0].name, size: file[0].size, type: file[0].type });
+<script type="text/javascript">
+
+// the values we have in IE (this is not a html5 file upload, so the content is not here of course)
+function dumpMeta(file) {
+  $('#metadata').html(JSON.stringify({ name: file.name, size: file.size, type: file.type }, null, '  '));
+}
+
+$('#btn-1').on('click', function () {
+  fileDialog({ accept: '.csv' })
+    .then(function (file) {
+      var data = new FormData();
+      data.append('file', file[0]);
+      data.append('fileName', file[0].name);
+
+      dumpMeta(file[0]);
 
       $.ajax({
         url: 'index.html',
@@ -39,10 +51,27 @@ $('#btn-1').on('click', function () {
         contentType: false, // do NOT set contentType or mimeType
         type: 'POST',
         success: function (data){
-          alert('success');
+          console.log('success');
         }
       });
     })
+});
+
+$('#btn-2').on('click', function () {
+  var dummy = $('<input type="file" id="hidden-file" accept=".csv"/>');
+  dummy.appendTo('body');
+  dummy.on('change', function (e) {
+    var file = dummy[0].files[0];
+    dumpMeta(file);
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      $('#result').text(reader.result);
+      $(dummy).remove();
+    };
+    reader.readAsText(file); // for img: reader.readAsDataURL(file);
+  });
+  dummy.click();
+  $(dummy).prop('disabled', true);
 });
 </script>
 </body>
